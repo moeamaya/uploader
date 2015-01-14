@@ -1,0 +1,32 @@
+
+body {
+  background: #2f3238;
+  color: #fff;
+  font-family: sans-serif;
+}
+h1 {
+  font-size: 1em;
+  letter-spacing: 0.02em;
+  margin: 5em 0;
+}
+.container {
+  width: 50%;
+  margin: 0 auto;
+}
+.uploader {
+  background: #32363c;
+  border: 2px dashed #4e4b54;
+  border-radius: 4px;
+  height: 400px;
+  line-height: 400px;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  transition: .2s ease-in-out;
+  &:hover {
+    background: #45424a;
+  }
+  &.dragging {
+    transform: scale(1.05);
+  }
+}

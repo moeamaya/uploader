@@ -4,9 +4,9 @@
 var Uploader = function(saver){
   var self = Object.create(Uploader.prototype);
 
-  var _file;
-  var _uploadType;
-  var _key;
+  var _file; // actual file
+  var _uploadType; // specific media JS Object
+  var _key; // S3 key ie: image/123/image.jpg
 
 
   // getType
@@ -24,6 +24,7 @@ var Uploader = function(saver){
   var formatBytes = function(bytes){
     return (bytes/1000000).toFixed(1) + 'mb';
   };
+
 
 
   // --------------------------
@@ -57,10 +58,8 @@ var Uploader = function(saver){
   // figure out upload object
   // ProjectImage, ProjectHeader, UserAvatar, etc
   self.setUploadType = function(uploadType){
-    if (uploadType === "project-image"){
+    if (uploadType === "image"){
       _uploadType = new UploaderProjectImage(_file, saver);
-    } else if (uploadType === "project-hero"){
-      _uploadType = new UploaderProjectHero(_file, saver);
     };
   };
 
