@@ -5,10 +5,18 @@
 4. Create a preview in the browser and upload to S3
 5. Update image in browser and post to Rails with S3 Location and create Image object
 
+##Settings
+####ENV variables
 
-ENV variables
-aws_bucket
+####API routes
 
+####JS options
+In app/assets/javascripts/Image.js
+```js
+self.sizeLimit = 1000000; // 1mb
+```
+
+####S3 bucket CORS configuration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
