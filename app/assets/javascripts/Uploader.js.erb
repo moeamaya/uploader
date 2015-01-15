@@ -1,13 +1,12 @@
-// Abstract class used for uploading
-// files to S3
 
-var Uploader = function(){
+// Abstract class used for uploading files directly to S3
+// Requires an uploadType object like Image, Avatar, Hero, etc
+//
+var Uploader = function(file){
   var self = Object.create(Uploader.prototype);
 
-  var _file; // actual file
   var _uploadType; // specific media JS Object
-  var _key; // S3 key ie: image/123/image.jpg
-  var _model; // db model that holds media ie: Image, Avatar
+  var _file = file; // actual file
   var _form = new FormData();
   var aws_bucket = "https://" + "<%= ENV['S3_BUCKET'] %>" + ".s3.amazonaws.com/";
 
@@ -24,7 +23,7 @@ var Uploader = function(){
   };
 
 
-  // visual helper to make size human readable
+  // visual helper to make file size human readable
   var formatBytes = function(bytes){
     return (bytes/1000000).toFixed(1) + 'mb';
   };
@@ -39,7 +38,7 @@ var Uploader = function(){
       url: _uploadType.getAPI,
       type: 'GET',
       dataType: 'json',
-      data: {mime: mime, filename: _file.name, key: _key}, // send the file name to the server so it can generate the key param
+      data: {mime: mime, filename: _file.name}, // filename used for the S3 key
       success: function(data) {
         _form.append("key", data.key);
         _form.append("AWSAccessKeyId", "<%= ENV['AWS_KEY'] %>");
@@ -84,7 +83,7 @@ var Uploader = function(){
   };
 
 
-  // updateDBObject
+  // create a new DB object with S3 url
   var postURL = function(url){
     var data = {"url": url}
     $.post(_uploadType.postAPI, data, function(){
@@ -100,18 +99,6 @@ var Uploader = function(){
   // --------------------------
 
 
-  // setFile
-  self.setFile = function(file){
-    _file = file;
-  };
-
-
-  // Rails parent model: Project or User
-  self.setKey = function(key){
-    _key = key;
-  };
-
-
   // Determine whether it's an image or video
   self.getFileType = function(){
     var typeCheck = _file.type.split('/')[0];
@@ -123,16 +110,16 @@ var Uploader = function(){
   };
 
 
-  // figure out upload object
-  // ProjectImage, ProjectHeader, UserAvatar, etc
+  // Determine out upload object
+  // Image, Header, Avatar, etc
   self.setUploadType = function(uploadType){
-    if (uploadType === "image"){
+    if (uploadType === "Image"){
       _uploadType = new Image(_file);
     };
   };
 
 
-  // createDBObject
+  // Begin upload process
   self.upload = function(){
     if (checkFileSize()){
       getPresignedURL();

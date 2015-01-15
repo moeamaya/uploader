@@ -22,11 +22,11 @@ var Image = function(file){
 
   //
   var setPlaceholder = function(img) {
-    $placeholder.find("img").css({
-      "-webkit-filter": "brightness(1.0)",
-      "filter": "brightness(1.0)"
-    }).attr("src", img);
-    $placeholder.find(".loader").remove();
+    // $placeholder.find("img").css({
+    //   "-webkit-filter": "brightness(1.0)",
+    //   "filter": "brightness(1.0)"
+    // }).attr("src", img);
+    // $placeholder.find(".loader").remove();
   };
 
 
@@ -37,7 +37,7 @@ var Image = function(file){
 
 
   self.startUpload = function(){
-    createPlaceholder();
+    //createPlaceholder(img);
   };
 
 
@@ -47,7 +47,6 @@ var Image = function(file){
 
 
   self.finishUpload = function(img){
-    console.log("alll done");
     //setPlaceholder(img);
   };
 

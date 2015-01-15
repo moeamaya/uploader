@@ -33,7 +33,7 @@ module Api
 
       private
 
-
+      # parameterizes filenames to be used as S3 keys
       def safe_filename(filename)
         extension = File.extname(filename).gsub(/^\.+/, '')
         filename = File.basename(filename, ".#{extension}").parameterize

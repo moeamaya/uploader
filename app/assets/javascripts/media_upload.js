@@ -7,17 +7,19 @@ $(function(){
 
   var $box = $(".uploader");
 
-  $box.on("dragover", function(e){ e.preventDefault();e.stopPropagation();$box.addClass("hover"); });
-  $box.on("dragenter", function(e){ e.preventDefault();e.stopPropagation(); });
+  // Drag and Drop
+  $box.on("dragenter", function(e){ e.preventDefault();e.stopPropagation();$box.addClass("over"); });
+  $box.on("dragleave", function(e){ e.preventDefault();e.stopPropagation();$box.removeClass("over"); });
   $box.on("drop", function(e){
     e.preventDefault();
     e.stopPropagation();
-    $box.removeClass("hover");
+    $box.removeClass("over");
 
     var selectedFile = e.originalEvent.dataTransfer.files[0];
     selectUploadType(selectedFile);
   });
 
+  // Click
   $box.click(function(e){
     e.preventDefault();
 
@@ -35,6 +37,9 @@ $(function(){
 
 
 
+  //--------------------------------
+  // Create an uploader
+  //--------------------------------
 
 
   // Used to determine whether uploading a
@@ -54,30 +59,28 @@ $(function(){
 
 
   var uploaderImage = function(file){
-    var uploader = Uploader();
+    var uploader = Uploader(file);
 
-    // give the uploader the actual file
-    uploader.setFile(file);
-    uploader.setKey("image");
-    uploader.setUploadType("image");
+    // Set what type of image we're uploading
+    uploader.setUploadType("Image");
 
     uploader.upload();
   };
 
 
   var uploaderVideo = function(file){
-
-
-
+    // upload a video
   };
 
 
 
+
   //--------------------------------
-  // Helpers
+  // Helper methods
   //--------------------------------
 
-  // helper method
+
+  // splits mime type to return media type
   var getFileType = function(file){
     return file.type.split('/')[0];
   };
