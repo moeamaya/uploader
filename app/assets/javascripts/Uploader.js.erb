@@ -1,0 +1,150 @@
+// Abstract class used for uploading
+// files to S3
+
+var Uploader = function(){
+  var self = Object.create(Uploader.prototype);
+
+  var _file; // actual file
+  var _uploadType; // specific media JS Object
+  var _key; // S3 key ie: image/123/image.jpg
+  var _model; // db model that holds media ie: Image, Avatar
+  var _form = new FormData();
+  var aws_bucket = "https://" + "<%= ENV['S3_BUCKET'] %>" + ".s3.amazonaws.com/";
+
+
+  // need mime type so S3 delivers content correctly
+  var getMimeType = function(){
+    return _file.type;
+  };
+
+
+  // check before making presigned post call
+  var checkFileSize = function(){
+    return (_file.size <= _uploadType.sizeLimit) ? true : false;
+  };
+
+
+  // visual helper to make size human readable
+  var formatBytes = function(bytes){
+    return (bytes/1000000).toFixed(1) + 'mb';
+  };
+
+
+  // get a presigned url from Rails
+  // to directly upload to S3
+  var getPresignedURL = function(){
+    var mime = getMimeType();
+
+    $.ajax({
+      url: _uploadType.getAPI,
+      type: 'GET',
+      dataType: 'json',
+      data: {mime: mime, filename: _file.name, key: _key}, // send the file name to the server so it can generate the key param
+      success: function(data) {
+        _form.append("key", data.key);
+        _form.append("AWSAccessKeyId", "<%= ENV['AWS_KEY'] %>");
+        _form.append("Content-Type", mime);
+        _form.append("acl", "public-read");
+        _form.append("policy", data.policy);
+        _form.append("signature", data.signature);
+        _form.append("success_action_status", "201");
+        _form.append("file", _file);
+
+        // let's fire that damn thing
+        _uploadType.startUpload();
+        uploadS3();
+      }
+    });
+  };
+
+
+  var uploadS3 = function(){
+    var xhr = new XMLHttpRequest();
+
+    // TODO
+    // update to show a progress bar
+    //
+    // xhr.upload.addEventListener('progress', function(e){
+    //   var percent = Math.round((e.loaded / e.total) * 100);
+    //   $('.bar').css('width', percent + '%');
+    // });
+
+    xhr.onreadystatechange = function(){
+      if (xhr.readyState==4) {
+        var xml = $.parseXML(xhr.responseText);
+        var $xml = $(xml);
+        var url = $xml.find("Location").text();
+
+        postURL(url);
+      }
+    }
+
+    xhr.open('POST', aws_bucket, true); //MUST BE LAST LINE BEFORE YOU SEND
+    xhr.send(_form);
+  };
+
+
+  // updateDBObject
+  var postURL = function(url){
+    var data = {"url": url}
+    $.post(_uploadType.postAPI, data, function(){
+      _uploadType.finishUpload();
+    });
+  };
+
+
+
+
+  // --------------------------
+  //  Public Methods
+  // --------------------------
+
+
+  // setFile
+  self.setFile = function(file){
+    _file = file;
+  };
+
+
+  // Rails parent model: Project or User
+  self.setKey = function(key){
+    _key = key;
+  };
+
+
+  // Determine whether it's an image or video
+  self.getFileType = function(){
+    var typeCheck = _file.type.split('/')[0];
+    if (typeCheck === "image" || typeCheck === "video"){
+      return typeCheck;
+    } else {
+      return undefined;
+    };
+  };
+
+
+  // figure out upload object
+  // ProjectImage, ProjectHeader, UserAvatar, etc
+  self.setUploadType = function(uploadType){
+    if (uploadType === "image"){
+      _uploadType = new Image(_file);
+    };
+  };
+
+
+  // createDBObject
+  self.upload = function(){
+    if (checkFileSize()){
+      getPresignedURL();
+    } else {
+      var size = formatBytes(_uploadType.sizeLimit);
+      var msg = "Oops, we don't support media larger than " + size;
+      alert(msg);
+    };
+  };
+
+
+
+  return self;
+};
+
