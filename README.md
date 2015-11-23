@@ -52,3 +52,16 @@ Login to AWS management console. Go to your S3 Bucket and click *Properties*. Se
   </CORSRule>
 </CORSConfiguration>
 ```
+
+####Rails will complain that ajax request doesn't pass CSRF
+Add to bottom of application.js (or admin.js if different template)
+```js
+// For ajax request need to pass CSRF
+$(function(){
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+});
+```
