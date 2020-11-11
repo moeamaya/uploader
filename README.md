@@ -1,5 +1,5 @@
 
-##How it works
+## How it works
 1. Select File (click custom button or drag-and-drop)
 2. Get file type (image or video) and validate size, mime, etc.
 3. Make request to Rails for pre-signed S3 url with filename as the S3 key
@@ -7,15 +7,15 @@
 5. Update image in browser and post to Rails with S3 Location and create an Image instance
 
 
-##Settings
-####ENV variables
+## Settings
+#### ENV variables
 ```yaml
 AWS_KEY: KEY
 AWS_SECRET: SECRET
 S3_BUCKET: BUCKET
 ```
 
-####API routes
+#### API routes
 In app/assets/javascripts/Image.js
 ```js
 self.getAPI = "api/v1/image-get";
@@ -31,13 +31,13 @@ namespace :api do
 end
 ```
 
-####JS options
+#### JS options
 In app/assets/javascripts/Image.js
 ```js
 self.sizeLimit = 1000000; // 1mb
 ```
 
-####S3 bucket CORS configuration
+#### S3 bucket CORS configuration
 Login to AWS management console. Go to your S3 Bucket and click *Properties*. Select *Permissions* and  *Add CORS Configuration* then paste the xml below.
 
 ```xml
@@ -53,7 +53,7 @@ Login to AWS management console. Go to your S3 Bucket and click *Properties*. Se
 </CORSConfiguration>
 ```
 
-####Rails will complain that ajax request doesn't pass CSRF
+#### Rails will complain that ajax request doesn't pass CSRF
 Add to bottom of application.js (or admin.js if different template)
 ```js
 // For ajax request need to pass CSRF
